@@ -47,7 +47,8 @@ local function statement_end_line(buf, row, col, ft)
   return row
 end
 
-function M.insert(method)
+function M.insert(method, insert_opts)
+  insert_opts = insert_opts or {}
   local buf = vim.api.nvim_get_current_buf()
   local ft = vim.bo[buf].filetype
   local lang = langs.for_filetype(ft)
@@ -61,16 +62,25 @@ function M.insert(method)
     return
   end
 
-  local var, var_row = target.resolve(buf, ft)
+  local var, var_row, var_end_row = target.resolve(buf, ft, insert_opts)
   if not var or var == "" then
     vim.notify("turbo-log: no variable found", vim.log.levels.WARN)
     return
   end
 
   local cursor = vim.api.nvim_win_get_cursor(0)
-  local row = type(var_row) == "number" and var_row or (cursor[1] - 1)
-  local col = cursor[2]
-  local end_row = statement_end_line(buf, row, col, ft)
+  local ctx_row = type(var_row) == "number" and var_row or (cursor[1] - 1)
+  local ctx_col = cursor[2]
+
+  local statement_row = ctx_row
+  local statement_col = ctx_col
+  if insert_opts.from_visual and type(var_end_row) == "number" then
+    statement_row = var_end_row
+    local line = vim.api.nvim_buf_get_lines(buf, statement_row, statement_row + 1, false)[1] or ""
+    statement_col = math.max(0, #line - 1)
+  end
+
+  local end_row = statement_end_line(buf, statement_row, statement_col, ft)
   local insert_row = end_row + 1
 
   local opts = config.get()
@@ -84,7 +94,7 @@ function M.insert(method)
     log_line_num = log_line_num + 1
   end
 
-  local ctx = context.get(buf, row, col, ft)
+  local ctx = context.get(buf, ctx_row, ctx_col, ft)
   local built = message.build_lines(method, var, ctx, log_line_num, ft)
 
   local lines = {}

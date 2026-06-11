@@ -14,6 +14,25 @@ local function map_pair(_keys, lhs_gui, lhs_fallback, fn, desc)
   end
 end
 
+local function map_insert_pair(binding, method, desc)
+  if binding.gui then
+    vim.keymap.set("n", binding.gui, function()
+      insert.insert(method)
+    end, { desc = desc .. " (GUI)", silent = true })
+    vim.keymap.set("x", binding.gui, function()
+      insert.insert(method, { from_visual = true })
+    end, { desc = desc .. " (GUI)", silent = true })
+  end
+  if binding.fallback then
+    vim.keymap.set("n", binding.fallback, function()
+      insert.insert(method)
+    end, { desc = desc, silent = true })
+    vim.keymap.set("x", binding.fallback, function()
+      insert.insert(method, { from_visual = true })
+    end, { desc = desc, silent = true })
+  end
+end
+
 local function setup_keymaps()
   local km = config.get().keymaps
 
@@ -29,9 +48,7 @@ local function setup_keymaps()
 
   for _, item in ipairs(insert_methods) do
     local binding = km.insert[item.key]
-    map_pair(binding, binding.gui, binding.fallback, function()
-      insert.insert(item.method)
-    end, item.desc)
+    map_insert_pair(binding, item.method, item.desc)
   end
 
   local bulk_ops = {
