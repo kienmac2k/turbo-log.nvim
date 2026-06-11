@@ -85,17 +85,43 @@ function M.build_php_line(method, var, ctx, log_line)
   return string.format('%s(%s%s%s . print_r(%s, true))%s', fn, quote, message, quote, var, semicolon)
 end
 
+local function python_log_fn(method)
+  local opts = config.get()
+  local logger = opts.pythonLogger or "logging"
+  if method == "custom" then
+    return logger .. "." .. (opts.logFunction or "info")
+  end
+  local level = ({
+    log = "info",
+    info = "info",
+    debug = "debug",
+    warn = "warning",
+    error = "error",
+  })[method] or "info"
+  return logger .. "." .. level
+end
+
+local function escape_py_format(message)
+  return (message:gsub("%%", "%%%%"))
+end
+
 function M.build_python_line(method, var, ctx, log_line)
   local opts = config.get()
   local quote = select_quote(opts.quote, var)
-  local message = M.build_message_parts(opts, ctx, var, log_line)
+  local message = escape_py_format(M.build_message_parts(opts, ctx, var, log_line))
 
-  if quote == '"' then
-    return string.format('print("%s", %s)', message, var)
-  elseif quote == "'" then
-    return string.format("print('%s', %s)", message, var)
+  if method == "table" then
+    local fn = python_log_fn("log")
+    return string.format('%s("%%s\\n%%s", "%s", __import__("pprint").pformat(%s))', fn, message, var)
   end
-  return string.format("print(%s%s%s, %s)", quote, message, quote, var)
+
+  local fn = python_log_fn(method)
+  if quote == '"' then
+    return string.format('%s("%%s %%r", "%s", %s)', fn, message, var)
+  elseif quote == "'" then
+    return string.format("%s('%%s %%r', '%s', %s)", fn, message, var)
+  end
+  return string.format('%s("%%s %%r", %s%s%s, %s)', fn, quote, message, quote, var)
 end
 
 local function js_log_fn(method)
@@ -115,10 +141,11 @@ function M.build_separator_line(method, content_line, ft)
   local inner = string.format("%s %s%s", opts.logMessagePrefix, string.rep("-", dash_count), opts.logMessagePrefix)
 
   if ft == "python" then
+    local fn = python_log_fn(method == "table" and "log" or method)
     if quote == '"' then
-      return string.format('print("%s")', inner)
+      return string.format('%s("%%s", "%s")', fn, escape_py_format(inner))
     end
-    return string.format("print('%s')", inner)
+    return string.format("%s('%%s', '%s')", fn, escape_py_format(inner))
   end
 
   if ft == "php" then

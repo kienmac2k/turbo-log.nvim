@@ -31,7 +31,7 @@ local function infer_ft(ft, line)
   if line:find("console%.") then
     return "typescript"
   end
-  if line:find("print%(") then
+  if line:find("print%(") or line:find("logging%.") or line:find("pprint") or line:find("pformat%(") then
     return "python"
   end
   if line:find("error_log") or line:find("var_dump") or line:find("print_r") then
@@ -121,7 +121,13 @@ end
 
 function M.extract_var(line, ft)
   if ft == "python" then
-    local var = line:match(",%s*([%w_%.%[%]%(%)]+%.?%w*)%s*%)%s*$")
+    local var = line:match('__import__%("pprint"%).pformat%(([%w_%.%[%]%(%)]+)%)$')
+    if not var then
+      var = line:match("^pprint%(([%w_%.%[%]%(%)]+)%)$")
+    end
+    if not var then
+      var = line:match(",%s*([%w_%.%[%]%(%)]+%.?%w*)%s*%)%s*$")
+    end
     if not var then
       var = line:match(',%s*([%w_%.%[%]%(%)]+)%s*$')
     end
@@ -141,6 +147,25 @@ end
 
 function M.extract_method(line, ft)
   if ft == "python" then
+    if line:find('__import__%("pprint"%).pformat%(') or line:find("^pprint%(") then
+      return "table"
+    end
+    local level = line:match("logging%.(%w+)%(") or line:match("logger%.(%w+)%(")
+    if level == "debug" then
+      return "debug"
+    end
+    if level == "info" then
+      return "info"
+    end
+    if level == "warning" then
+      return "warn"
+    end
+    if level == "error" then
+      return "error"
+    end
+    if line:find("print%(") then
+      return "log"
+    end
     return "log"
   end
   if ft == "php" then

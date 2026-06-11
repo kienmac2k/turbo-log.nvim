@@ -11,6 +11,9 @@ end
 function M.detect_patterns(_prefix)
   return {
     "print%(",
+    "logging%.%w+%(",
+    "logger%.%w+%(",
+    "__import__%(\"pprint\"%).pformat%(",
   }
 end
 

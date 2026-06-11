@@ -15,6 +15,7 @@ M.defaults = {
   insertEmptyLineBeforeLogMessage = false,
   insertEmptyLineAfterLogMessage = false,
   logFunction = "log",
+  pythonLogger = "logging",
   filetypes = {
     javascript = true,
     javascriptreact = true,
