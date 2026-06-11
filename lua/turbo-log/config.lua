@@ -1,7 +1,7 @@
 local M = {}
 
 M.defaults = {
-  logMessagePrefix = "🚀",
+  logMessagePrefix = "🚀🚀🚀",
   logMessageSuffix = ":",
   delimiterInsideMessage = "~",
   quote = '"',
@@ -29,22 +29,22 @@ M.defaults = {
   },
   keymaps = {
     insert = {
-      log = { gui = "<D-k><D-l>", fallback = "<leader>vl" },
-      info = { gui = "<D-k><D-n>", fallback = "<leader>vn" },
-      debug = { gui = "<D-k><D-b>", fallback = "<leader>vb" },
-      table = { gui = "<D-k><D-t>", fallback = "<leader>vt" },
-      warn = { gui = "<D-k><D-r>", fallback = "<leader>vw" },
-      error = { gui = "<D-k><D-e>", fallback = "<leader>ve" },
-      custom = { gui = "<D-k><D-k>", fallback = "<leader>vk" },
+      log = { gui = "<D-k><D-l>", fallback = "<leader>Tl" },
+      info = { gui = "<D-k><D-i>", fallback = "<leader>Ti" },
+      debug = { gui = "<D-k><D-b>", fallback = "<leader>Td" },
+      table = { gui = "<D-k><D-t>", fallback = "<leader>Tt" },
+      warn = { gui = "<D-k><D-r>", fallback = "<leader>Tw" },
+      error = { gui = "<D-k><D-e>", fallback = "<leader>Te" },
+      custom = { gui = "<D-k><D-k>", fallback = "<leader>Tc" },
     },
     bulk = {
-      comment = { gui = "<A-S-c>", fallback = "<leader>vC" },
-      uncomment = { gui = "<A-S-u>", fallback = "<leader>vU" },
-      delete = { gui = "<A-S-d>", fallback = "<leader>vD" },
-      correct = { gui = "<A-S-x>", fallback = "<leader>vX" },
+      comment = { gui = "<A-S-c>", fallback = "<leader>TC" },
+      uncomment = { gui = "<A-S-u>", fallback = "<leader>TU" },
+      delete = { gui = "<A-S-d>", fallback = "<leader>TD" },
+      correct = { gui = "<A-S-x>", fallback = "<leader>TX" },
     },
-    panel = { gui = "<D-k><D-p>", fallback = "<leader>vp" },
-    find = { gui = "<D-k><D-f>", fallback = "<leader>vf" },
+    panel = { gui = "<D-k><D-p>", fallback = "<leader>Tp" },
+    find = { gui = "<D-k><D-f>", fallback = "<leader>Tf" },
   },
   panel = {
     height = 0.3,

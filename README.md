@@ -67,36 +67,36 @@ return {
     "kienmac2k/turbo-log.nvim",
     main = "turbo-log",
     dependencies = { "folke/trouble.nvim" },
-    opts = { setup_keymaps = false },
     config = true,
   },
 }
 ```
 
-Add keymaps to `lua/config/keymaps.lua` (LazyVim uses `<leader>c*` for LSP, so Turbo uses `<leader>v*`):
+Default keymaps are registered on setup (`setup_keymaps = true`). On LazyVim, `<leader>T*` avoids `<leader>c*` (LSP/code) and `<leader>t*` (testing).
 
-```lua
-local turbo_modes = { "n", "x" }
-local function turbo()
-  return require("turbo-log")
-end
+## Keymaps
 
-vim.keymap.set(turbo_modes, "<leader>vl", function() turbo().insert("log") end, { desc = "Turbo console.log" })
-vim.keymap.set(turbo_modes, "<leader>vn", function() turbo().insert("info") end, { desc = "Turbo console.info" })
-vim.keymap.set(turbo_modes, "<leader>vb", function() turbo().insert("debug") end, { desc = "Turbo console.debug" })
-vim.keymap.set(turbo_modes, "<leader>vt", function() turbo().insert("table") end, { desc = "Turbo console.table" })
-vim.keymap.set(turbo_modes, "<leader>vw", function() turbo().insert("warn") end, { desc = "Turbo console.warn" })
-vim.keymap.set(turbo_modes, "<leader>ve", function() turbo().insert("error") end, { desc = "Turbo console.error" })
-vim.keymap.set(turbo_modes, "<leader>vk", function() turbo().insert("custom") end, { desc = "Turbo custom log" })
+Registered automatically when `setup_keymaps` is `true` (default). Works in normal and visual mode for insert bindings.
 
-vim.keymap.set("n", "<leader>vC", function() turbo().comment_all() end, { desc = "Turbo comment all logs" })
-vim.keymap.set("n", "<leader>vU", function() turbo().uncomment_all() end, { desc = "Turbo uncomment all logs" })
-vim.keymap.set("n", "<leader>vD", function() turbo().delete_all() end, { desc = "Turbo delete all logs" })
-vim.keymap.set("n", "<leader>vX", function() turbo().correct_all() end, { desc = "Turbo correct all logs" })
+| Action | Keymap | Command |
+|---|---|---|
+| Insert log | `<leader>Tl` | `:TurboLogInsertLog` |
+| Insert info | `<leader>Ti` | `:TurboLogInsertInfo` |
+| Insert debug | `<leader>Td` | `:TurboLogInsertDebug` |
+| Insert table | `<leader>Tt` | `:TurboLogInsertTable` |
+| Insert warn | `<leader>Tw` | `:TurboLogInsertWarn` |
+| Insert error | `<leader>Te` | `:TurboLogInsertError` |
+| Insert custom | `<leader>Tc` | `:TurboLogInsertCustom` |
+| Comment all logs | `<leader>TC` | `:TurboLogCommentAll` |
+| Uncomment all logs | `<leader>TU` | `:TurboLogUncommentAll` |
+| Delete all logs | `<leader>TD` | `:TurboLogDeleteAll` |
+| Correct all logs | `<leader>TX` | `:TurboLogCorrectAll` |
+| Log panel | `<leader>Tp` | `:TurboLogPanel` |
+| Find logs | `<leader>Tf` | `:TurboLogFind` |
 
-vim.keymap.set("n", "<leader>vp", function() turbo().panel() end, { desc = "Turbo log panel" })
-vim.keymap.set("n", "<leader>vf", function() turbo().find() end, { desc = "Turbo find logs" })
-```
+On macOS, GUI chords are also set when available (e.g. `<D-k><D-l>` for log). Terminal fallbacks use the `<leader>T*` bindings above.
+
+Set `setup_keymaps = false` and map `require("turbo-log")` yourself if you prefer custom bindings.
 
 ## Usage
 
@@ -104,18 +104,9 @@ vim.keymap.set("n", "<leader>vf", function() turbo().find() end, { desc = "Turbo
 
 Place the cursor on a variable or select an expression, then use a keymap or `:TurboLogInsertLog`.
 
-### Bulk operations (current buffer)
-
-| Action | Default keymap | Command |
-|---|---|---|
-| Comment all logs | `<leader>vC` | `:TurboLogCommentAll` |
-| Uncomment all logs | `<leader>vU` | `:TurboLogUncommentAll` |
-| Delete all logs | `<leader>vD` | `:TurboLogDeleteAll` |
-| Correct all logs | `<leader>vX` | `:TurboLogCorrectAll` |
-
 ### Log panel
 
-Open with `<leader>vp` or `:TurboLogPanel`. Bottom split UI (similar to LazyVim `<leader>xx` diagnostics).
+Open with `<leader>Tp` or `:TurboLogPanel`. Bottom split UI (similar to LazyVim `<leader>xx` diagnostics).
 
 | Key | Action |
 |---|---|
@@ -132,7 +123,14 @@ Open with `<leader>vp` or `:TurboLogPanel`. Bottom split UI (similar to LazyVim 
 ```lua
 require("turbo-log").setup({
   wrapLogMessage = true,
-  setup_keymaps = true,
+  setup_keymaps = true, -- default; registers <leader>T* keymaps
+  keymaps = {
+    insert = {
+      log = { fallback = "<leader>Tl" },
+      info = { fallback = "<leader>Ti" },
+      -- override any binding; gui = "<D-k><D-l>" on macOS
+    },
+  },
   panel = {
     height = 0.3,
     scope = "git_root", -- "git_root" | "cwd"
