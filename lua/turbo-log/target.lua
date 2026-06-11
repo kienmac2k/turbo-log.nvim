@@ -29,6 +29,18 @@ local EXPRESSION_TYPES = {
   dynamic_variable_name = true,
   member_access_expression = true,
   scoped_call_expression = true,
+  element_access_expression = true,
+  invocation_expression = true,
+  prefix_unary_expression = true,
+  postfix_unary_expression = true,
+  assignment_expression = true,
+  object_creation_expression = true,
+  implicit_array_creation_expression = true,
+  string_literal = true,
+  integer_literal = true,
+  boolean_literal = true,
+  null_literal = true,
+  real_literal = true,
 }
 
 local function node_text(node, buf)

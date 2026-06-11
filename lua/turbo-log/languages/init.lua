@@ -1,10 +1,11 @@
+local csharp = require("turbo-log.languages.csharp")
 local javascript = require("turbo-log.languages.javascript")
 local php = require("turbo-log.languages.php")
 local python = require("turbo-log.languages.python")
 
 local M = {}
 
-local langs = { javascript, php, python }
+local langs = { csharp, javascript, php, python }
 
 function M.for_filetype(ft)
   for _, lang in ipairs(langs) do

@@ -3,6 +3,7 @@ local context = require("turbo-log.context")
 local target = require("turbo-log.target")
 local message = require("turbo-log.message")
 local langs = require("turbo-log.languages")
+local python_setup = require("turbo-log.python_setup")
 
 local M = {}
 
@@ -36,6 +37,11 @@ local function statement_end_line(buf, row, col, ft)
           or ntype == "expression_list"
           or ntype == "import_statement"
           or ntype == "export_statement"
+          or ntype == "block"
+          or ntype == "local_declaration_statement"
+          or ntype == "foreach_statement"
+          or ntype == "method_declaration"
+          or ntype == "constructor_declaration"
         then
           local _, _, erow = node:range()
           return erow
@@ -83,6 +89,12 @@ function M.insert(method, insert_opts)
   local end_row = statement_end_line(buf, statement_row, statement_col, ft)
   local insert_row = end_row + 1
 
+  local setup_offset = 0
+  if ft == "python" then
+    setup_offset = python_setup.ensure(buf)
+    insert_row = insert_row + setup_offset
+  end
+
   local opts = config.get()
   local indent = get_indent(vim.api.nvim_buf_get_lines(buf, end_row, end_row + 1, false)[1] or "")
 
@@ -94,7 +106,7 @@ function M.insert(method, insert_opts)
     log_line_num = log_line_num + 1
   end
 
-  local ctx = context.get(buf, ctx_row, ctx_col, ft)
+  local ctx = context.get(buf, ctx_row + setup_offset, ctx_col, ft)
   local built = message.build_lines(method, var, ctx, log_line_num, ft)
 
   local lines = {}

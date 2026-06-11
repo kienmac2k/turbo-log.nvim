@@ -2,7 +2,7 @@
 
 A Neovim plugin that replicates the [Turbo Console Log](https://marketplace.visualstudio.com/items?itemName=ChakrounAnas.turbo-console-log) VS Code extension — including log message formatting, bulk operations, and a workspace log panel.
 
-**Supported languages:** JavaScript, TypeScript, JSX/TSX, PHP, Python
+**Supported languages:** JavaScript, TypeScript, JSX/TSX, PHP, Python, C#
 
 ## Features
 

@@ -132,6 +132,48 @@ local function js_log_fn(method)
   return "console." .. method
 end
 
+local function escape_csharp_interp(message)
+  return (message:gsub("{", "{{"):gsub("}", "}}"))
+end
+
+local function csharp_log_fn(method)
+  local opts = config.get()
+  if method == "custom" then
+    local fn = opts.logFunction or "WriteLine"
+    if fn:find("%.") then
+      return fn
+    end
+    return "Console." .. fn
+  end
+  local fns = {
+    log = "Console.WriteLine",
+    info = "Console.WriteLine",
+    debug = "System.Diagnostics.Debug.WriteLine",
+    warn = "Console.WriteLine",
+    error = "Console.Error.WriteLine",
+  }
+  return fns[method] or "Console.WriteLine"
+end
+
+function M.build_csharp_line(method, var, ctx, log_line)
+  local opts = config.get()
+  local message = escape_csharp_interp(M.build_message_parts(opts, ctx, var, log_line))
+  local fn = csharp_log_fn(method)
+  local semicolon = ";"
+
+  if method == "table" then
+    return string.format(
+      '%s($"%s\\n{System.Text.Json.JsonSerializer.Serialize(%s)}")%s',
+      fn,
+      message,
+      var,
+      semicolon
+    )
+  end
+
+  return string.format('%s($"%s {%s}")%s', fn, message, var, semicolon)
+end
+
 function M.build_separator_line(method, content_line, ft)
   local opts = config.get()
   local quote = select_quote(opts.quote, "")
@@ -152,7 +194,16 @@ function M.build_separator_line(method, content_line, ft)
     return string.format('error_log("%s");', inner)
   end
 
+  if ft == "cs" or ft == "csharp" then
+    local fn = csharp_log_fn(method == "table" and "log" or method)
+    return string.format('%s($"%s")%s', fn, escape_csharp_interp(inner), ";")
+  end
+
   return string.format("%s(%s%s%s)%s", js_log_fn(method), quote, inner, quote, semicolon)
+end
+
+local function is_csharp(ft)
+  return ft == "cs" or ft == "csharp"
 end
 
 function M.build_lines(method, var, ctx, log_line, ft)
@@ -161,6 +212,8 @@ function M.build_lines(method, var, ctx, log_line, ft)
     content = M.build_python_line(method, var, ctx, log_line)
   elseif ft == "php" then
     content = M.build_php_line(method, var, ctx, log_line)
+  elseif is_csharp(ft) then
+    content = M.build_csharp_line(method, var, ctx, log_line)
   else
     content = M.build_js_line(method, var, ctx, log_line)
   end

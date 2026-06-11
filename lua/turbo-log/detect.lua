@@ -37,6 +37,9 @@ local function infer_ft(ft, line)
   if line:find("error_log") or line:find("var_dump") or line:find("print_r") then
     return "php"
   end
+  if line:find("Console%.") or line:find("Debug%.WriteLine") then
+    return "cs"
+  end
   return "typescript"
 end
 
@@ -142,6 +145,17 @@ function M.extract_var(line, ft)
     return var
   end
 
+  if ft == "cs" or ft == "csharp" then
+    local var = line:match("{System%.Text%.Json%.JsonSerializer%.Serialize%(([^)]+)%)}")
+    if not var then
+      var = line:match("{%s*([^}]+)%s*}%s*\"%s*%)")
+    end
+    if not var then
+      var = line:match("{%s*([^}]+)%s*}%s*\"%s*;?%s*$")
+    end
+    return var
+  end
+
   return line:match(",%s*([%w_%.%[%]%(%)]+%.?%w*)%s*%)%s*;?%s*$")
 end
 
@@ -174,6 +188,18 @@ function M.extract_method(line, ft)
     end
     if line:find("print_r") then
       return "table"
+    end
+    return "log"
+  end
+  if ft == "cs" or ft == "csharp" then
+    if line:find("JsonSerializer%.Serialize") then
+      return "table"
+    end
+    if line:find("Debug%.WriteLine") then
+      return "debug"
+    end
+    if line:find("Console%.Error%.WriteLine") then
+      return "error"
     end
     return "log"
   end

@@ -16,6 +16,7 @@ M.defaults = {
   insertEmptyLineAfterLogMessage = false,
   logFunction = "log",
   pythonLogger = "logging",
+  pythonAutoSetup = true,
   filetypes = {
     javascript = true,
     javascriptreact = true,
@@ -23,6 +24,8 @@ M.defaults = {
     typescriptreact = true,
     php = true,
     python = true,
+    cs = true,
+    csharp = true,
   },
   keymaps = {
     insert = {

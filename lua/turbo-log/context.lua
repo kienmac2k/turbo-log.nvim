@@ -45,6 +45,24 @@ local function walk_ancestors(node, buf, ft)
       if not function_name and (ntype == "function_definition" or ntype == "lambda") then
         function_name = name_from_node(node, buf)
       end
+    elseif ft == "cs" or ft == "csharp" then
+      if
+        not class_name
+        and (
+          ntype == "class_declaration"
+          or ntype == "struct_declaration"
+          or ntype == "record_declaration"
+          or ntype == "interface_declaration"
+        )
+      then
+        class_name = name_from_node(node, buf)
+      end
+      if
+        not function_name
+        and (ntype == "method_declaration" or ntype == "constructor_declaration" or ntype == "local_function_statement")
+      then
+        function_name = name_from_node(node, buf)
+      end
     else
       if not class_name and (ntype == "class_declaration" or ntype == "class") then
         class_name = name_from_node(node, buf)
