@@ -163,7 +163,57 @@ local function parse_rg_line(row)
   return path, tonumber(lnum), text
 end
 
-function M.workspace_scan(root)
+local function normalize_path(path)
+  if vim.fs and vim.fs.normalize then
+    return vim.fs.normalize(path)
+  end
+  return vim.fn.fnamemodify(path, ":p")
+end
+
+local function in_scope(path, root)
+  path = normalize_path(path)
+  root = normalize_path(root)
+  return vim.startswith(path, root)
+end
+
+local function sort_entries(entries)
+  table.sort(entries, function(a, b)
+    if a.path == b.path then
+      return a.lnum < b.lnum
+    end
+    return a.path < b.path
+  end)
+  return entries
+end
+
+function M.buffer_workspace_entries(buf, path)
+  path = normalize_path(path)
+  local entries = {}
+  for _, item in ipairs(M.in_buffer(buf)) do
+    entries[#entries + 1] = {
+      path = path,
+      display_path = paths.display(path),
+      lnum = item.lnum,
+      line = item.line,
+    }
+  end
+  return entries
+end
+
+local function modified_buffers_in_scope(root)
+  local buffers = {}
+  for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+    if vim.api.nvim_buf_is_valid(buf) and vim.api.nvim_buf_is_loaded(buf) and vim.bo[buf].buftype == "" then
+      local path = vim.api.nvim_buf_get_name(buf)
+      if path ~= "" and vim.bo[buf].modified and in_scope(path, root) then
+        buffers[normalize_path(path)] = buf
+      end
+    end
+  end
+  return buffers
+end
+
+local function rg_scan(root)
   root = vim.fn.fnamemodify(root or vim.fn.getcwd(), ":p")
   local prefix = config.get().logMessagePrefix
   local escaped = vim.pesc(prefix)
@@ -222,14 +272,27 @@ function M.workspace_scan(root)
     end
   end
 
-  table.sort(results, function(a, b)
-    if a.path == b.path then
-      return a.lnum < b.lnum
-    end
-    return a.path < b.path
-  end)
-
   return results
+end
+
+function M.workspace_scan(root)
+  root = vim.fn.fnamemodify(root or vim.fn.getcwd(), ":p")
+  local modified = modified_buffers_in_scope(root)
+  local results = {}
+
+  for _, entry in ipairs(rg_scan(root)) do
+    if not modified[normalize_path(entry.path)] then
+      results[#results + 1] = entry
+    end
+  end
+
+  for path, buf in pairs(modified) do
+    for _, entry in ipairs(M.buffer_workspace_entries(buf, path)) do
+      results[#results + 1] = entry
+    end
+  end
+
+  return sort_entries(results)
 end
 
 return M

@@ -22,6 +22,11 @@ M.config = {
     turbo_logs = {
       desc = "Turbo Console Logs",
       source = "turbo_logs",
+      events = {
+        "BufEnter",
+        "BufWritePost",
+        { event = "TextChanged", main = true },
+      },
       focus = false,
       auto_preview = true,
       follow = true,
