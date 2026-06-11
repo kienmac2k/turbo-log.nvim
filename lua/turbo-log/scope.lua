@@ -9,7 +9,7 @@ function M.git_root()
 end
 
 function M.scan()
-  local opts = require("turbo-console-log.config").get().panel
+  local opts = require("turbo-log.config").get().panel
   if opts.scope == "git_root" then
     return M.git_root()
   end

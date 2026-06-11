@@ -1,8 +1,8 @@
-local config = require("turbo-console-log.config")
-local context = require("turbo-console-log.context")
-local target = require("turbo-console-log.target")
-local message = require("turbo-console-log.message")
-local langs = require("turbo-console-log.languages")
+local config = require("turbo-log.config")
+local context = require("turbo-log.context")
+local target = require("turbo-log.target")
+local message = require("turbo-log.message")
+local langs = require("turbo-log.languages")
 
 local M = {}
 
@@ -52,18 +52,18 @@ function M.insert(method)
   local ft = vim.bo[buf].filetype
   local lang = langs.for_filetype(ft)
   if not lang then
-    vim.notify("turbo-console-log: unsupported filetype " .. ft, vim.log.levels.WARN)
+    vim.notify("turbo-log: unsupported filetype " .. ft, vim.log.levels.WARN)
     return
   end
 
   if lang.log_methods and not lang.log_methods[method] then
-    vim.notify("turbo-console-log: unsupported method " .. method, vim.log.levels.WARN)
+    vim.notify("turbo-log: unsupported method " .. method, vim.log.levels.WARN)
     return
   end
 
   local var, var_row = target.resolve(buf, ft)
   if not var or var == "" then
-    vim.notify("turbo-console-log: no variable found", vim.log.levels.WARN)
+    vim.notify("turbo-log: no variable found", vim.log.levels.WARN)
     return
   end
 

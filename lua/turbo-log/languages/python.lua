@@ -1,4 +1,4 @@
-local message = require("turbo-console-log.message")
+local message = require("turbo-log.message")
 
 local M = {}
 

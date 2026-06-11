@@ -1,8 +1,8 @@
-local config = require("turbo-console-log.config")
-local context = require("turbo-console-log.context")
-local detect = require("turbo-console-log.detect")
-local message = require("turbo-console-log.message")
-local langs = require("turbo-console-log.languages")
+local config = require("turbo-log.config")
+local context = require("turbo-log.context")
+local detect = require("turbo-log.detect")
+local message = require("turbo-log.message")
+local langs = require("turbo-log.languages")
 
 local M = {}
 
@@ -46,7 +46,7 @@ local function guard_buf(buf)
   buf = buf or vim.api.nvim_get_current_buf()
   local ft = vim.bo[buf].filetype
   if not langs.for_filetype(ft) then
-    vim.notify("turbo-console-log: unsupported filetype " .. ft, vim.log.levels.WARN)
+    vim.notify("turbo-log: unsupported filetype " .. ft, vim.log.levels.WARN)
     return nil
   end
   return buf, ft

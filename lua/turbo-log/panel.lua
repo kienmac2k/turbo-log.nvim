@@ -1,5 +1,5 @@
-local config = require("turbo-console-log.config")
-local scope = require("turbo-console-log.scope")
+local config = require("turbo-log.config")
+local scope = require("turbo-log.scope")
 
 local M = {}
 
@@ -29,7 +29,7 @@ end
 
 function M.open()
   if not has_trouble() then
-    vim.notify("turbo-console-log: trouble.nvim is required for the log panel", vim.log.levels.ERROR)
+    vim.notify("turbo-log: trouble.nvim is required for the log panel", vim.log.levels.ERROR)
     return
   end
   trouble().open(panel_opts())
@@ -44,7 +44,7 @@ end
 
 function M.toggle()
   if not has_trouble() then
-    vim.notify("turbo-console-log: trouble.nvim is required for the log panel", vim.log.levels.ERROR)
+    vim.notify("turbo-log: trouble.nvim is required for the log panel", vim.log.levels.ERROR)
     return
   end
   trouble().toggle(panel_opts())

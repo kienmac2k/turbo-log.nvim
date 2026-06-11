@@ -1,18 +1,21 @@
-local message = require("turbo-console-log.message")
+local message = require("turbo-log.message")
 
 local M = {}
 
-M.filetypes = { "php" }
+M.filetypes = {
+  "javascript",
+  "javascriptreact",
+  "typescript",
+  "typescriptreact",
+}
 
 function M.build_line(method, var, ctx, log_line)
-  return message.build_php_line(method, var, ctx, log_line)
+  return message.build_js_line(method, var, ctx, log_line)
 end
 
 function M.detect_patterns(_prefix)
   return {
-    "error_log%(",
-    "var_dump%(",
-    "print_r%(",
+    "console%.%w+%(",
   }
 end
 

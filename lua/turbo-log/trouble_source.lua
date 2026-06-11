@@ -1,8 +1,8 @@
 local Item = require("trouble.item")
-local config = require("turbo-console-log.config")
-local detect = require("turbo-console-log.detect")
-local panel_actions = require("turbo-console-log.panel_actions")
-local scope = require("turbo-console-log.scope")
+local config = require("turbo-log.config")
+local detect = require("turbo-log.detect")
+local panel_actions = require("turbo-log.panel_actions")
+local scope = require("turbo-log.scope")
 
 local M = {}
 

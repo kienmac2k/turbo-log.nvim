@@ -1,6 +1,6 @@
-local config = require("turbo-console-log.config")
-local langs = require("turbo-console-log.languages")
-local paths = require("turbo-console-log.paths")
+local config = require("turbo-log.config")
+local langs = require("turbo-log.languages")
+local paths = require("turbo-log.paths")
 
 local M = {}
 

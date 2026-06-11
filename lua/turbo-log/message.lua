@@ -1,4 +1,4 @@
-local config = require("turbo-console-log.config")
+local config = require("turbo-log.config")
 
 local M = {}
 

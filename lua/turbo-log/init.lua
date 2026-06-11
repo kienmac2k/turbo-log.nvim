@@ -1,7 +1,7 @@
-local config = require("turbo-console-log.config")
-local insert = require("turbo-console-log.insert")
-local bulk = require("turbo-console-log.bulk")
-local panel = require("turbo-console-log.panel")
+local config = require("turbo-log.config")
+local insert = require("turbo-log.insert")
+local bulk = require("turbo-log.bulk")
+local panel = require("turbo-log.panel")
 local M = {}
 
 local function map_pair(_keys, lhs_gui, lhs_fallback, fn, desc)
@@ -72,7 +72,7 @@ end
 
 function M.setup(opts)
   config.setup(opts)
-  require("turbo-console-log.trouble_source").register()
+  require("turbo-log.trouble_source").register()
   setup_commands()
   if config.get().setup_keymaps then
     setup_keymaps()

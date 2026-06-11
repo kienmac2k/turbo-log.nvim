@@ -1,6 +1,6 @@
-local javascript = require("turbo-console-log.languages.javascript")
-local php = require("turbo-console-log.languages.php")
-local python = require("turbo-console-log.languages.python")
+local javascript = require("turbo-log.languages.javascript")
+local php = require("turbo-log.languages.php")
+local python = require("turbo-log.languages.python")
 
 local M = {}
 

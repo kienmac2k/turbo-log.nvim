@@ -1,5 +1,5 @@
-local bulk = require("turbo-console-log.bulk")
-local detect = require("turbo-console-log.detect")
+local bulk = require("turbo-log.bulk")
+local detect = require("turbo-log.detect")
 
 local M = {}
 
@@ -29,7 +29,7 @@ end
 function M.with_entry_buf(entry, fn)
   local path = vim.fs.normalize(entry.path)
   if vim.fn.filereadable(path) ~= 1 then
-    vim.notify("turbo-console-log: file not found: " .. path, vim.log.levels.ERROR)
+    vim.notify("turbo-log: file not found: " .. path, vim.log.levels.ERROR)
     return false
   end
 

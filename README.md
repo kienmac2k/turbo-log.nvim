@@ -1,4 +1,4 @@
-# Turbo Console Log for Neovim
+# turbo-log.nvim
 
 A Neovim plugin that replicates the [Turbo Console Log](https://marketplace.visualstudio.com/items?itemName=ChakrounAnas.turbo-console-log) VS Code extension — including log message formatting, bulk operations, and a workspace log panel.
 
@@ -35,13 +35,13 @@ console.log("🚀 -----------------------------------------------------🚀");
 
 ### lazy.nvim
 
-Add to your plugin spec (e.g. `lua/plugins/turbo-console-log.lua`):
+Add to your plugin spec (e.g. `lua/plugins/turbo-log.lua`):
 
 ```lua
 return {
   {
-    "kienmac2k/Turbo-console-log-Neovim-Plugin",
-    main = "turbo-console-log",
+    "kienmac2k/turbo-log.nvim",
+    main = "turbo-log",
     dependencies = {
       "nvim-treesitter/nvim-treesitter",
       "folke/trouble.nvim",
@@ -49,7 +49,7 @@ return {
     },
     opts = {},
     config = function(_, opts)
-      require("turbo-console-log").setup(opts)
+      require("turbo-log").setup(opts)
     end,
   },
 }
@@ -59,36 +59,16 @@ Then run `:Lazy sync`.
 
 ### LazyVim
 
-LazyVim already ships with `trouble.nvim` and `snacks.nvim`. Create `lua/plugins/turbo-console-log.lua`:
+LazyVim already ships with `trouble.nvim` and `snacks.nvim`. Create `lua/plugins/turbo-log.lua`:
 
 ```lua
 return {
   {
-    "kienmac2k/Turbo-console-log-Neovim-Plugin",
-    main = "turbo-console-log",
-    lazy = false,
-    dependencies = {
-      "nvim-treesitter/nvim-treesitter",
-      "folke/snacks.nvim",
-      "folke/trouble.nvim",
-    },
-    opts = {
-      setup_keymaps = false,
-    },
-    config = function(_, opts)
-      require("turbo-console-log").setup(opts)
-    end,
-    init = function()
-      vim.api.nvim_create_autocmd("FileType", {
-        pattern = { "javascript", "typescript", "javascriptreact", "typescriptreact", "php", "python" },
-        callback = function()
-          local ok, ts = pcall(require, "nvim-treesitter.configs")
-          if ok then
-            pcall(ts.ensure_installed, { "javascript", "typescript", "php", "python" })
-          end
-        end,
-      })
-    end,
+    "kienmac2k/turbo-log.nvim",
+    main = "turbo-log",
+    dependencies = { "folke/trouble.nvim" },
+    opts = { setup_keymaps = false },
+    config = true,
   },
 }
 ```
@@ -98,7 +78,7 @@ Add keymaps to `lua/config/keymaps.lua` (LazyVim uses `<leader>c*` for LSP, so T
 ```lua
 local turbo_modes = { "n", "x" }
 local function turbo()
-  return require("turbo-console-log")
+  return require("turbo-log")
 end
 
 vim.keymap.set(turbo_modes, "<leader>vl", function() turbo().insert("log") end, { desc = "Turbo console.log" })
@@ -150,7 +130,7 @@ Open with `<leader>vp` or `:TurboLogPanel`. Bottom split UI (similar to LazyVim 
 ## Configuration
 
 ```lua
-require("turbo-console-log").setup({
+require("turbo-log").setup({
   wrapLogMessage = true,
   setup_keymaps = true,
   panel = {
